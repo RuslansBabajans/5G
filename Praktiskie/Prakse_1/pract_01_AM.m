@@ -33,16 +33,16 @@ sAMflt=filter(LPF,1,sAMdem);
 [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
 
 
-% figure(1); hold on; grid on
-% plot(fr, 20*log10(spectr),'b.-')
-% plot(fr, 20*log10(spectrAM),'r.-')
-% plot(fr, 20*log10(spectrAMdem),'g.-')
-% plot(fr, 20*log10(spectrAMflt),'m.-')
+figure(1); hold on; grid on
+plot(fr, 20*log10(spectr),'b.-')
+plot(fr, 20*log10(spectrAM),'r.-')
+plot(fr, 20*log10(spectrAMdem),'g.-')
+plot(fr, 20*log10(spectrAMflt),'m.-')
 % return
 
-figure(1); hold on
+figure(2); hold on
 plot(usrDatRsm,'b.-')
-plot(sAM,'r.-')
+% plot(sAM,'r.-')
 plot(sAMdem,'g.-')
-plot(sAMflt,'m.-')
+% plot(sAMflt,'m.-')
 
