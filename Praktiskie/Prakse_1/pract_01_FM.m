@@ -26,7 +26,8 @@ sFMdem=abs(sFMdiscr);
 % Filter  the signal
 LPF=fir1(50,f0/(Fd/2));
 sFMflt=filter(LPF,1,sFMdem);
-sFMrest=sFMflt-mean(sFMflt); sFMrest=sFMrest*sqrt(mean(usrDatRsm.^2)/mean(sFMrest.^2));
+sFMrest=sFMflt-mean(sFMflt);
+sFMrest=sFMrest*sqrt(mean(usrDatRsm.^2)/mean(sFMrest.^2));
 %fvtool(LPF)
 
 

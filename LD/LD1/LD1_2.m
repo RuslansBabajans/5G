@@ -21,7 +21,7 @@ usrDatRsm=resample(usrDat,40,1);
 % Time vector
 t=(1:length(usrDatRsm))/Fd;
 %==============================================%
-%% Crystal receiver
+%% Tuned radio frequency receiver
 
 f0=140e6; % Carrier frequency
 
@@ -32,7 +32,7 @@ sAM_TX=(2+usrDatRsm).*cos(2*pi*f0*t);
 
 dB_att=-4;
 sAM_RX=sAM_TX*10^(dB_att/20); %  sAM_RX= sAM_TX attenuated by 4 dB
-attenuation_check=20*log10(sAM_RX/sAM_TX); % attenuation_check= -4.0000000 dB
+attenuation_check=20*log10(sAM_RX./sAM_TX); % attenuation_check= -4.0000000 dB
 %==============================================%
 % AM demodulation using crystal receiver (diode)
 
@@ -57,6 +57,7 @@ sAMflt=filter(LPF,1,sAMdem_and_Gaussian_noise);
 [spectrAM_TX, fr]=win_fft(sAM_TX, 4e9,10^4,10^3);
 [spectrAM_RX, fr]=win_fft(sAM_RX, 4e9,10^4,10^3);
 [spectrAMdem, fr]=win_fft(sAMdem, 4e9,10^4,10^3);
+[spectrsAMdem_and_Gaussian_noise, fr]=win_fft(sAMdem_and_Gaussian_noise, 4e9,10^4,10^3);
 [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
 %==============================================%
 %% Plots
@@ -128,15 +129,15 @@ figure(4)
 plot(fr, 20*log10(spectr))
 hold on
 plot(fr,20*log10(spectrAMdem))
+plot(fr,20*log10(spectrsAMdem_and_Gaussian_noise))
 plot(fr,20*log10(spectrAMflt))
 
 xlabel('f, Hz')
 ylabel('s(f), dB')
-legend("AM_{TX}","AM_{RX}",'location','northeast')
+legend("usrDat","AMdem","AMdem+Gaussian noise","AMflt",'location','northeast')
 grid on, grid minor
 set(gca,'fontsize',12)
 %==============================================%
-%% 
 
 
 

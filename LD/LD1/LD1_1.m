@@ -59,6 +59,8 @@ sAMflt=filter(LPF,1,sAMdem_and_Gaussian_noise);
 [spectrAMdem, fr]=win_fft(sAMdem, 4e9,10^4,10^3);
 [spectrsAMdem_and_Gaussian_noise, fr]=win_fft(sAMdem_and_Gaussian_noise, 4e9,10^4,10^3);
 [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
+
+[spectrs_Gaussian_noise, fr]=win_fft(standard_deviation*Gaussian_noise, 4e9,10^4,10^3);
 %==============================================%
 %% Plots
 
@@ -138,7 +140,10 @@ legend("usrDat","AMdem","AMdem+Gaussian noise","AMflt",'location','northeast')
 grid on, grid minor
 set(gca,'fontsize',12)
 %==============================================%
-%% 
+
+% figure(5)
+% plot(fr, 20*log10(spectrs_Gaussian_noise))
+%==============================================%
 
 
 
