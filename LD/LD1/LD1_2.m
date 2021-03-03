@@ -7,13 +7,13 @@ close all
 %% Parameters
 
 Fs=100e6; % 100 MHz baseband clock
-Fd=4000e6; % analogue sampling freq
+Fd=4000e6; % analogue sampling freq.
 N=200; % number of symbols to transmit
 
 
 % Generate user data
 % usrDat=kron(randi(2,1,N)*2-3,ones(1,4));
-usrDat=kron(randi(2,1,N)*2-3,ones(1,4));    % ones(1,4) is 4 samples per symbol,  Fs/4= 25 Mbaud
+usrDat=kron(randi(2,1,N)*2-3,ones(1,4)); % ones(1,4) is 4 samples per symbol,  Fs/4= 25 Mbaud
 
 % Resampling
 usrDatRsm=resample(usrDat,40,1);
@@ -21,22 +21,47 @@ usrDatRsm=resample(usrDat,40,1);
 % Time vector
 t=(1:length(usrDatRsm))/Fd;
 %==============================================%
-%% Tuned radio frequency receiver
+%% Tuned radio frequency receiver task
 
 f0=140e6; % Carrier frequency
 
 % Modulation
 sAM_TX=(2+usrDatRsm).*cos(2*pi*f0*t);
 %==============================================%
-% Attenuation
+% Channel attenuation
 
 dB_att=-4;
 sAM_RX=sAM_TX*10^(dB_att/20); %  sAM_RX= sAM_TX attenuated by 4 dB
-attenuation_check=20*log10(sAM_RX./sAM_TX); % attenuation_check= -4.0000000 dB
+attenuation_check=20*log10(sAM_RX./sAM_TX); % attenuation_check= -4.000000 dB
+%==============================================%
+% Adjusts the level of the received signal to twice the level of modulating
+% signal
+
+P_usrDatRsm=rms(usrDatRsm)^2; % s(t) average power
+P_sAM_RX=rms(sAM_RX)^2; % AM_RX average power
+
+tuned_receiver_gain=1; % tunable gain of the radio frequency amplifier
+
+sAM_RX_tuned=sAM_RX; % Placeholder
+Level_difference=10; % Placeholder 
+
+% Received signal amplification to adjust the power level of AM_RX to twice
+% the powe level of s(t)
+
+while Level_difference > 0
+sAM_RX_tuned=sAM_RX*tuned_receiver_gain; % Amplify received signal
+
+P_sAM_RX_tuned=rms(sAM_RX_tuned)^2; % tuned signal average power
+
+Level_difference=P_usrDatRsm*2-P_sAM_RX_tuned; % tuned AM_RX power comparison to twice the level of s(t) 
+
+tuned_receiver_gain=tuned_receiver_gain+0.000001; % increase gain of the radio frequency amplifier
+end
+
 %==============================================%
 % AM demodulation using crystal receiver (diode)
 
-sAMdem=abs(sAM_RX);
+sAMdem=abs(sAM_RX_tuned);
 %==============================================%
 % Add white Gaussian noise to the signal produced by the diode
 
@@ -75,6 +100,18 @@ set(gca,'fontsize',12)
 %==============================================%
 
 figure(2)
+hold on
+plot(t*1e6,sAM_RX_tuned)
+plot(t*1e6,sAM_RX)
+
+xlabel('t, ns')
+ylabel('s(t), V')
+legend("AM_{RX} tuned","AM_{RX}")
+grid on, grid minor
+set(gca,'fontsize',12)
+%==============================================%
+
+figure(3)
 
 subplot(4,1,1)
 plot(t,usrDatRsm)
@@ -113,7 +150,7 @@ grid on, grid minor
 set(gca,'fontsize',12)
 %==============================================%
 
-figure(3)
+figure(4)
 plot(fr,20*log10(spectrAM_TX))
 hold on
 plot(fr,20*log10(spectrAM_RX)-4)
@@ -125,7 +162,7 @@ grid on, grid minor
 set(gca,'fontsize',12)
 %==============================================%
 
-figure(4)
+figure(5)
 plot(fr, 20*log10(spectr))
 hold on
 plot(fr,20*log10(spectrAMdem))

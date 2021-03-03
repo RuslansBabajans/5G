@@ -54,6 +54,8 @@ plot(usrDatRsm,'b.-')
 plot(sFM,'r.-')
 plot(sFMdiscr,'g.-')
 plot(sFMrest,'m.-')
+xlabel('Поугаи')
+ylabel('Удавы')
 
 
 
