@@ -77,29 +77,50 @@ sFM_at_IF=sFM_RX_tuned.*LO;
 
 sFMdem=abs(sFM_at_IF);
 %==============================================%
-% Add white Gaussian noise to the signal produced by the diode
-
-standard_deviation=0.1; % Standard deviation
-Gaussian_noise=randn(size(sFMdem));
-
-std_check=std(standard_deviation*Gaussian_noise); % Check Standard deviation, std_check=0.09981
-
-sAMdem_and_Gaussian_noise=sFMdem+standard_deviation*Gaussian_noise;
-%==============================================%
 % Filter  the signal
 
 % LPF=fir1(50,f0/(Fd/2));
 % sAMflt=filter(LPF,1,sAMdem_and_Gaussian_noise);
 %==============================================%
 % Spectra 
-% [spectr, fr]=win_fft(usrDatRsm, 4e9,10^4,10^3);
-% [spectrAM_TX, fr]=win_fft(sAM_TX, 4e9,10^4,10^3);
-% [spectrAM_RX, fr]=win_fft(sAM_RX, 4e9,10^4,10^3);
-% [spectrAMdem, fr]=win_fft(sAMdem, 4e9,10^4,10^3);
+[spectr_usrDatRsm_1, fr]=win_fft(usrDatRsm_1, 4e9,10^4,10^3);
+[spectr_usrDatRsm_2, fr]=win_fft(usrDatRsm_2, 4e9,10^4,10^3);
+
+[spectr_sFM_1, fr]=win_fft(sFM_1, 4e9,10^4,10^3);
+[spectr_sFM_2, fr]=win_fft(sFM_2, 4e9,10^4,10^3);
+[spectr_sFM, fr]=win_fft(sFM, 4e9,10^4,10^3);
+
+[spectr_sFM_RX, fr]=win_fft(sFM_RX, 4e9,10^4,10^3);
+[spectr_sFM_at_IF, fr]=win_fft(sFM_at_IF, 4e9,10^4,10^3);
+[spectr_sFMdem, fr]=win_fft(sFMdem, 4e9,10^4,10^3);
+
 % [spectrsAMdem_and_Gaussian_noise, fr]=win_fft(sAMdem_and_Gaussian_noise, 4e9,10^4,10^3);
 % [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
 %==============================================%
 %% Plots
+
+figure(1)
+hold on
+plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
+plot(fr*1e-6,20*log10(spectr_usrDatRsm_2))
+xlim([0, 200])
+
+figure(2)
+subplot(2,1,1)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM_1))
+plot(fr*1e-6,20*log10(spectr_sFM_2))
+xlim([0, 500])
+
+subplot(2,1,2)
+plot(fr*1e-6,20*log10(spectr_sFM),'color','#EDB120')
+xlim([0, 500])
+
+figure(3)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM))
+plot(fr*1e-6,20*log10(spectr_sFM_at_IF))
+
 % 
 % figure(1)
 % hold on
@@ -163,12 +184,12 @@ sAMdem_and_Gaussian_noise=sFMdem+standard_deviation*Gaussian_noise;
 % grid on, grid minor
 % set(gca,'fontsize',12)
 % %==============================================%
-% 
+
 % figure(4)
 % plot(fr,20*log10(spectrAM_TX))
 % hold on
 % plot(fr,20*log10(spectrAM_RX)-4)
-% 
+
 % xlabel('f, Hz')
 % ylabel('s(f), dB')
 % legend("AM_{TX}","AM_{RX}",'location','northeast')
