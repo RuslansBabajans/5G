@@ -39,17 +39,17 @@ sFMrest=sFMrest*sqrt(mean(usrDatRsm.^2)/mean(sFMrest.^2));
 [spectrFMflt fr]   =win_fft(sFMrest,   4e9,1e4,7e3);
 
 
-% figure(1); hold on
-% plot(fr, 20*log10(spectr),'b.-')
-% plot(fr, 20*log10(spectrFM),'r.-')
-% plot(fr, 20*log10(spectrFMdiscr),'g.-')
-% plot(fr, 20*log10(spectrFMdem),'m.-')
-% plot(fr, 20*log10(spectrFMflt),'c.-')
-% return
-
-
-
 figure(1); hold on
+plot(fr, 20*log10(spectr),'b.-')
+plot(fr, 20*log10(spectrFM),'r.-')
+plot(fr, 20*log10(spectrFMdiscr),'g.-')
+plot(fr, 20*log10(spectrFMdem),'m.-')
+plot(fr, 20*log10(spectrFMflt),'c.-')
+
+
+
+
+figure(2); hold on
 plot(usrDatRsm,'b.-')
 plot(sFM,'r.-')
 plot(sFMdiscr,'g.-')

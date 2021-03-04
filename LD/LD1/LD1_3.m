@@ -10,7 +10,6 @@ Fs=100e6; % 100 MHz baseband clock
 Fd=4000e6; % analogue sampling freq.
 N=200; % number of symbols to transmit
 
-
 % Generate user data
 usrDat_1=kron(randi(2,1,N)*2-3,ones(1,4)); % ones(1,4) is 4 samples per symbol,  Fs/4= 25 Mbaud
 usrDat_2=kron(randi(2,1,N)*2-3,ones(1,4));
@@ -42,40 +41,90 @@ sFM=sFM_1+sFM_2;
 dB_att=-4;
 sFM_RX=sFM*10^(dB_att/20); %  attenuated by 4 dB
 %==============================================%
+% Ceparate signals using filter after antenna. 170 MHz and 370 MHz are
+% image frequencies, and both will be shifted to 100 MHz intermediate frequency. 
+
+
+BP_1=fir1(50,[f1-40e6,f1+40e6]/(4e9/2),'bandpass'); % filter to separate 170 MHz carrier frequency 1
+sFM_RX_1=filter(BP_1,1,sFM_RX);
+
+
+BP_2=fir1(50,[f2-40e6,f2+40e6]/(4e9/2),'bandpass'); % filter to separate 370 MHz carrier frequency 2
+sFM_RX_2=filter(BP_2,1,sFM_RX);
+%==============================================%
 % Adjusts the level of the received signal to twice the level of modulating
 % signal
 
 P_usrDatRsm_1=rms(usrDatRsm_1)^2; % s1(t) average power
-P_sFM_RX=rms(sFM_RX)^2; % AM_RX average power
+P_sFM_RX_1=rms(sFM_RX_1)^2; % 170 MHz signal average power
 
-tuned_receiver_gain=1; % tunable gain of the radio frequency amplifier
+tuned_receiver_gain_1=1; % tunable gain of the radio frequency amplifier
+sFM_RX_tuned_1=sFM_RX_1; % Placeholder
+Level_difference_1=10; % Placeholder
 
-sFM_RX_tuned=sFM_RX; % Placeholder
-Level_difference=10; % Placeholder 
+P_usrDatRsm_2=rms(usrDatRsm_2)^2; % s2(t) average power
+P_sFM_RX_2=rms(sFM_RX_2)^2; % 370 MHz signal average power
+
+tuned_receiver_gain_2=1; % tunable gain of the radio frequency amplifier
+sFM_RX_tuned_2=sFM_RX_2; % Placeholder
+Level_difference_2=10; % Placeholder
 
 % Received signal amplification to adjust the power level of AM_RX to twice
 % the powe level of s(t)
 
-while Level_difference > 0
-sFM_RX_tuned=sFM_RX_tuned*tuned_receiver_gain; % Amplify received signal
+while Level_difference_1 > 0
+sFM_RX_tuned_1=sFM_RX_tuned_1*tuned_receiver_gain_1; % Amplify received signal
 
-P_sFM_RX_tuned=rms(sFM_RX_tuned)^2; % tuned signal average power
+P_sFM_RX_tuned_1=rms(sFM_RX_tuned_1)^2; % tuned signal average power
 
-Level_difference=P_usrDatRsm_1*2-P_sFM_RX_tuned; % tuned AM_RX power comparison to twice the level of s1(t) 
+Level_difference_1=P_usrDatRsm_1*2-P_sFM_RX_tuned_1; % tuned AM_RX power comparison to twice the level of s1(t) 
 
-tuned_receiver_gain=tuned_receiver_gain+0.00000001; % increase gain of the radio frequency amplifier
+tuned_receiver_gain_1=tuned_receiver_gain_1+0.00001; % increase gain of the radio frequency amplifier
 end
+
+while Level_difference_2 > 0
+sFM_RX_tuned_2=sFM_RX_tuned_2*tuned_receiver_gain_2; % Amplify received signal
+
+P_sFM_RX_tuned_2=rms(sFM_RX_tuned_2)^2; % tuned signal average power
+
+Level_difference_2=P_usrDatRsm_2*2-P_sFM_RX_tuned_2; % tuned AM_RX power comparison to twice the level of s1(t) 
+
+tuned_receiver_gain_2=tuned_receiver_gain_2+0.00001; % increase gain of the radio frequency amplifier
+end
+
+
 %==============================================%
 % Mixing
 
 LO=1*cos(2*pi*f_LO*t);
 
-sFM_at_IF=sFM_RX_tuned.*LO;
+sFM_1_at_IF=sFM_RX_tuned_1.*LO;
+sFM_2_at_IF=sFM_RX_tuned_2.*LO;
+
+% Intermediate frequency filter
+
+IF_filter=fir1(50,f_LO/(4e9/2)); % If filter to remove the upconverted component
+
+sFM_1_at_IF=filter(IF_filter,1,sFM_1_at_IF);
+sFM_2_at_IF=filter(IF_filter,1,sFM_2_at_IF);
 
 %==============================================%
 % Demodulation using diode
+fr_discr=fir1(36,110e6/2e9, 'high');
+sFMdem_1=filter(fr_discr,1,sFM_1_at_IF);
 
-sFMdem=abs(sFM_at_IF);
+% sFMdem_1=abs(sFMdem_1);
+sFMdem_2=abs(sFM_2_at_IF);
+
+LPF=fir1(50,f_LO/(Fd/2));
+
+sFMdem_1=filter(LPF,1,sFMdem_1);
+sFMdem_1=sFMdem_1-mean(sFMdem_1);
+sFMdem_1=sFMdem_1*sqrt(mean(usrDatRsm_1.^2)/mean(sFMdem_1.^2));
+
+sFMdem_2=filter(LPF,1,sFMdem_2);
+sFMdem_2=sFMdem_2-mean(sFMdem_2);
+sFMdem_2=sFMdem_2*sqrt(mean(usrDatRsm_2.^2)/mean(sFMdem_2.^2));
 %==============================================%
 % Filter  the signal
 
@@ -91,8 +140,15 @@ sFMdem=abs(sFM_at_IF);
 [spectr_sFM, fr]=win_fft(sFM, 4e9,10^4,10^3);
 
 [spectr_sFM_RX, fr]=win_fft(sFM_RX, 4e9,10^4,10^3);
-[spectr_sFM_at_IF, fr]=win_fft(sFM_at_IF, 4e9,10^4,10^3);
-[spectr_sFMdem, fr]=win_fft(sFMdem, 4e9,10^4,10^3);
+
+[spectr_sFM_RX_1, fr]=win_fft(sFM_RX_1, 4e9,10^4,10^3);
+[spectr_sFM_RX_2, fr]=win_fft(sFM_RX_2, 4e9,10^4,10^3);
+
+[spectr_sFM_1_at_IF, fr]=win_fft(sFM_1_at_IF, 4e9,10^4,10^3);
+[spectr_sFM_2_at_IF, fr]=win_fft(sFM_2_at_IF, 4e9,10^4,10^3);
+
+[spectr_sFMdem_1, fr]=win_fft(sFMdem_1, 4e9,10^4,10^3);
+[spectr_sFMdem_2, fr]=win_fft(sFMdem_2, 4e9,10^4,10^3);
 
 % [spectrsAMdem_and_Gaussian_noise, fr]=win_fft(sAMdem_and_Gaussian_noise, 4e9,10^4,10^3);
 % [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
@@ -104,23 +160,54 @@ hold on
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_2))
 xlim([0, 200])
+%==============================================%
 
 figure(2)
-subplot(2,1,1)
+subplot(4,1,1)
 hold on
 plot(fr*1e-6,20*log10(spectr_sFM_1))
 plot(fr*1e-6,20*log10(spectr_sFM_2))
 xlim([0, 500])
 
-subplot(2,1,2)
+subplot(4,1,2)
 plot(fr*1e-6,20*log10(spectr_sFM),'color','#EDB120')
 xlim([0, 500])
 
-figure(3)
-hold on
-plot(fr*1e-6,20*log10(spectr_sFM))
-plot(fr*1e-6,20*log10(spectr_sFM_at_IF))
+subplot(4,1,3)
+plot(fr*1e-6,20*log10(spectr_sFM_RX_1))
+xlim([0, 500])
 
+subplot(4,1,4)
+plot(fr*1e-6,20*log10(spectr_sFM_RX_2),'color','#D95319')
+xlim([0, 500])
+%==============================================%
+
+figure(3)
+subplot(2,1,1)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM_RX_1))
+plot(fr*1e-6,20*log10(spectr_sFM_1_at_IF)) % Note that the spectrum is flipped
+xlim([0, 500])
+
+subplot(2,1,2)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM_RX_2))
+plot(fr*1e-6,20*log10(spectr_sFM_2_at_IF))
+xlim([0, 500])
+%==============================================%
+
+figure(4)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM_RX_1))
+plot(fr*1e-6,20*log10(spectr_sFM_1_at_IF))
+plot(fr*1e-6,20*log10(spectr_sFMdem_1))
+xlim([0, 500])
+
+
+figure(10)
+hold on
+plot(t*1e6,usrDatRsm_1)
+plot(t*1e6,sFMdem_1)
 % 
 % figure(1)
 % hold on
