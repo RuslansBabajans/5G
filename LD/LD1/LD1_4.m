@@ -2,7 +2,6 @@
 format long
 clear variables
 close all
-
 %==============================================%
 %% Parameters
 
@@ -41,12 +40,11 @@ dB_att=-4;
 sAM_RX=sAM*10^(dB_att/20); %  attenuated by 4 dB
 %==============================================%
 % Ceparate signals using filter after antenna. 170 MHz and 370 MHz are
-% image frequencies, and both will be shifted to 100 MHz intermediate frequency. 
-
+% image frequencies, and both will be shifted to 100 MHz intermediate
+% frequency.
 
 BP_1=fir1(50,[f1-20e6,f1+20e6]/(4e9/2),'bandpass'); % filter to separate 170 MHz carrier frequency 1
 sAM_RX_1=filter(BP_1,1,sAM_RX);
-
 
 BP_2=fir1(50,[f2-20e6,f2+20e6]/(4e9/2),'bandpass'); % filter to separate 370 MHz carrier frequency 2
 sAM_RX_2=filter(BP_2,1,sAM_RX);
@@ -69,26 +67,26 @@ sAM_RX_tuned_2=sAM_RX_2; % Placeholder
 Level_difference_2=10; % Placeholder
 
 % Received signal amplification to adjust the power level of AM_RX to twice
-% the powe level of s(t)
+% the powe level of
 
 while Level_difference_1 > 0
-sAM_RX_tuned_1=sAM_RX_tuned_1*tuned_receiver_gain_1; % Amplify received signal
-
-P_sAM_RX_tuned_1=rms(sAM_RX_tuned_1)^2; % tuned signal average power
-
-Level_difference_1=P_usrDatRsm_1*2-P_sAM_RX_tuned_1; % tuned AM_RX power comparison to twice the level of s1(t) 
-
-tuned_receiver_gain_1=tuned_receiver_gain_1+0.00001; % increase gain of the radio frequency amplifier
+    sAM_RX_tuned_1=sAM_RX_tuned_1*tuned_receiver_gain_1; % Amplify received signal
+    
+    P_sAM_RX_tuned_1=rms(sAM_RX_tuned_1)^2; % tuned signal average power
+    
+    Level_difference_1=P_usrDatRsm_1*2-P_sAM_RX_tuned_1; % tuned AM_RX power comparison to twice the level of s1(t)
+    
+    tuned_receiver_gain_1=tuned_receiver_gain_1+0.00001; % increase gain of the radio frequency amplifier
 end
 
 while Level_difference_2 > 0
-sAM_RX_tuned_2=sAM_RX_tuned_2*tuned_receiver_gain_2; % Amplify received signal
-
-P_sAM_RX_tuned_2=rms(sAM_RX_tuned_2)^2; % tuned signal average power
-
-Level_difference_2=P_usrDatRsm_2*2-P_sAM_RX_tuned_2; % tuned AM_RX power comparison to twice the level of s1(t) 
-
-tuned_receiver_gain_2=tuned_receiver_gain_2+0.00001; % increase gain of the radio frequency amplifier
+    sAM_RX_tuned_2=sAM_RX_tuned_2*tuned_receiver_gain_2; % Amplify received signal
+    
+    P_sAM_RX_tuned_2=rms(sAM_RX_tuned_2)^2; % tuned signal average power
+    
+    Level_difference_2=P_usrDatRsm_2*2-P_sAM_RX_tuned_2; % tuned AM_RX power comparison to twice the level of s1(t)
+    
+    tuned_receiver_gain_2=tuned_receiver_gain_2+0.00001; % increase gain of the radio frequency amplifier
 end
 %==============================================%
 % Mixing
@@ -111,7 +109,7 @@ sAM_2_directly_converted=filter(conversion_filter,1,sAM_2_directly_converted);
 sAM_2_directly_converted=sAM_2_directly_converted-mean(sAM_2_directly_converted);
 sAM_2_directly_converted=sAM_2_directly_converted*sqrt(mean(usrDatRsm_2.^2)/mean(sAM_2_directly_converted.^2));
 %==============================================%
-% Spectra 
+% Spectra
 
 [spectr_usrDatRsm_1, fr]=win_fft(usrDatRsm_1, 4e9,10^4,10^3);
 [spectr_usrDatRsm_2, fr]=win_fft(usrDatRsm_2, 4e9,10^4,10^3);
@@ -127,8 +125,6 @@ sAM_2_directly_converted=sAM_2_directly_converted*sqrt(mean(usrDatRsm_2.^2)/mean
 
 [spectr_sAM_1_directly_converted, fr]=win_fft(sAM_1_directly_converted, 4e9,10^4,10^3);
 [spectr_sAM_2_directly_converted, fr]=win_fft(sAM_2_directly_converted, 4e9,10^4,10^3);
-
-
 %==============================================%
 %% Plots
 
@@ -227,6 +223,7 @@ figure(10)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t*1e6,sAM_1_directly_converted)
+ylim([-2, 2])
 xlabel('t, ns')
 ylabel('s(t), V')
 legend("s(t)_1","s(t)_1 Demodulated",'location','northeast')
@@ -236,6 +233,7 @@ figure(11)
 hold on
 plot(t*1e6,usrDatRsm_2)
 plot(t*1e6,sAM_2_directly_converted)
+ylim([-2, 2])
 xlabel('t, ns')
 ylabel('s(t), V')
 legend("s(t)_2","s(t)_2 Demodulated",'location','northeast')

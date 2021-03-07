@@ -11,8 +11,7 @@ Fd=4000e6; % analogue sampling freq.
 N=200; % number of symbols to transmit
 
 
-% Generate user data
-% usrDat=kron(randi(2,1,N)*2-3,ones(1,4));
+% Generate user data usrDat=kron(randi(2,1,N)*2-3,ones(1,4));
 usrDat=kron(randi(2,1,N)*2-3,ones(1,4)); % ones(1,4) is 4 samples per symbol,  Fs/4= 25 Mbaud
 
 % Resampling
@@ -43,19 +42,19 @@ P_sAM_RX=rms(sAM_RX)^2; % AM_RX average power
 tuned_receiver_gain=1; % tunable gain of the radio frequency amplifier
 
 sAM_RX_tuned=sAM_RX; % Placeholder
-Level_difference=10; % Placeholder 
+Level_difference=10; % Placeholder
 
 % Received signal amplification to adjust the power level of AM_RX to twice
 % the powe level of s(t)
 
 while Level_difference > 0
-sAM_RX_tuned=sAM_RX*tuned_receiver_gain; % Amplify received signal
-
-P_sAM_RX_tuned=rms(sAM_RX_tuned)^2; % tuned signal average power
-
-Level_difference=P_usrDatRsm*2-P_sAM_RX_tuned; % tuned AM_RX power comparison to twice the level of s(t) 
-
-tuned_receiver_gain=tuned_receiver_gain+0.000001; % increase gain of the radio frequency amplifier
+    sAM_RX_tuned=sAM_RX*tuned_receiver_gain; % Amplify received signal
+    
+    P_sAM_RX_tuned=rms(sAM_RX_tuned)^2; % tuned signal average power
+    
+    Level_difference=P_usrDatRsm*2-P_sAM_RX_tuned; % tuned AM_RX power comparison to twice the level of s(t)
+    
+    tuned_receiver_gain=tuned_receiver_gain+0.00001; % increase gain of the radio frequency amplifier
 end
 
 %==============================================%
@@ -77,7 +76,7 @@ sAMdem_and_Gaussian_noise=sAMdem+standard_deviation*Gaussian_noise;
 LPF=fir1(50,f0/(Fd/2));
 sAMflt=filter(LPF,1,sAMdem_and_Gaussian_noise);
 %==============================================%
-% Spectra 
+% Spectra
 [spectr, fr]=win_fft(usrDatRsm, 4e9,10^4,10^3);
 [spectrAM_TX, fr]=win_fft(sAM_TX, 4e9,10^4,10^3);
 [spectrAM_RX, fr]=win_fft(sAM_RX, 4e9,10^4,10^3);
@@ -96,86 +95,84 @@ xlabel('t, ns')
 ylabel('s(t), V')
 legend("AM_{TX}","AM_{RX}")
 grid on, grid minor
-set(gca,'fontsize',12)
-%==============================================%
+set(gca,'fontsize',20)
 
-figure(2)
+figure(5)
 hold on
 plot(t*1e6,sAM_RX_tuned)
 plot(t*1e6,sAM_RX)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AM_{RX} tuned","AM_{RX}")
+legend("AM_{RX}","AM_{RX} tuned")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
-figure(3)
+figure(2)
 
-subplot(4,1,1)
-plot(t,usrDatRsm)
+subplot(2,1,1)
+plot(t*1e6,usrDatRsm)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("usrDat",'location','northeast')
+title("Modulating signal")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,2)
+subplot(2,1,2)
 plot(t*1e6,sAMdem)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMdem",'location','northeast')
+title("Diode output")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,3)
+
+figure(8)
+
+subplot(2,1,1)
 plot(t*1e6,sAMdem_and_Gaussian_noise)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMdem+Gaussian noise",'location','northeast')
+title("Diode output+Gaussian noise")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,4)
+subplot(2,1,2)
 plot(t*1e6,sAMflt)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMflt",'location','northeast')
+title("Demodulated signal")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
-figure(4)
-plot(fr,20*log10(spectrAM_TX))
+figure(3)
+plot(fr*1e-6,20*log10(spectrAM_TX))
 hold on
-plot(fr,20*log10(spectrAM_RX)-4)
-
-xlabel('f, Hz')
+plot(fr*1e-6,20*log10(spectrAM_RX)-4)
+xlim([0, 500])
+xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{TX}","AM_{RX}",'location','northeast')
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
-figure(5)
-plot(fr, 20*log10(spectr))
+figure(4)
+plot(fr*1e-6, 20*log10(spectr))
 hold on
-plot(fr,20*log10(spectrAMdem))
-plot(fr,20*log10(spectrsAMdem_and_Gaussian_noise))
-plot(fr,20*log10(spectrAMflt))
+plot(fr*1e-6,20*log10(spectrAMdem))
+plot(fr*1e-6,20*log10(spectrsAMdem_and_Gaussian_noise))
+plot(fr*1e-6,20*log10(spectrAMflt))
 
-xlabel('f, Hz')
+xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("usrDat","AMdem","AMdem+Gaussian noise","AMflt",'location','northeast')
+legend("Modulating signal","Diode output","Diode output+Gaussian noise","Demodulated signal",'location','northeast')
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
-
-
-
-

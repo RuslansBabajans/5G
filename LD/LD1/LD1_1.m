@@ -21,7 +21,7 @@ usrDatRsm=resample(usrDat,40,1);
 % Time vector
 t=(1:length(usrDatRsm))/Fd;
 %==============================================%
-%% Crystal receiver
+%% Crystal receiver task
 
 f0=140e6; % Carrier frequency
 
@@ -32,7 +32,7 @@ sAM_TX=(2+usrDatRsm).*cos(2*pi*f0*t);
 
 dB_att=-4;
 sAM_RX=sAM_TX*10^(dB_att/20); %  sAM_RX= sAM_TX attenuated by 4 dB
-attenuation_check=20*log10(sAM_RX/sAM_TX); % attenuation_check= -4.0000000 dB
+attenuation_check=20*log10(sAM_RX/sAM_TX); % attenuation_check= -4.0000 dB
 %==============================================%
 % AM demodulation using crystal receiver (diode)
 
@@ -73,76 +73,79 @@ xlabel('t, ns')
 ylabel('s(t), V')
 legend("AM_{TX}","AM_{RX}")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(2)
 
-subplot(4,1,1)
-plot(t,usrDatRsm)
+subplot(2,1,1)
+plot(t*1e6,usrDatRsm)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("usrDat",'location','northeast')
+title("Modulating signal")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,2)
+subplot(2,1,2)
 plot(t*1e6,sAMdem)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMdem",'location','northeast')
+title("Diode output")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,3)
+
+figure(8)
+
+subplot(2,1,1)
 plot(t*1e6,sAMdem_and_Gaussian_noise)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMdem+Gaussian noise",'location','northeast')
+title("Diode output+Gaussian noise")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 
-subplot(4,1,4)
+subplot(2,1,2)
 plot(t*1e6,sAMflt)
 
 xlabel('t, ns')
 ylabel('s(t), V')
-legend("AMflt",'location','northeast')
+title("Demodulated signal")
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(3)
-plot(fr,20*log10(spectrAM_TX))
+plot(fr*1e-6,20*log10(spectrAM_TX))
 hold on
-plot(fr,20*log10(spectrAM_RX)-4)
-
-xlabel('f, Hz')
+plot(fr*1e-6,20*log10(spectrAM_RX)-4)
+xlim([0, 500])
+xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{TX}","AM_{RX}",'location','northeast')
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(4)
-plot(fr, 20*log10(spectr))
+plot(fr*1e-6, 20*log10(spectr))
 hold on
-plot(fr,20*log10(spectrAMdem))
-plot(fr,20*log10(spectrsAMdem_and_Gaussian_noise))
-plot(fr,20*log10(spectrAMflt))
+plot(fr*1e-6,20*log10(spectrAMdem))
+plot(fr*1e-6,20*log10(spectrsAMdem_and_Gaussian_noise))
+plot(fr*1e-6,20*log10(spectrAMflt))
 
-xlabel('f, Hz')
+xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("usrDat","AMdem","AMdem+Gaussian noise","AMflt",'location','northeast')
+legend("Modulating signal","Diode output","Diode output+Gaussian noise","Demodulated signal",'location','northeast')
 grid on, grid minor
-set(gca,'fontsize',12)
+set(gca,'fontsize',20)
 %==============================================%
 
-% figure(5)
-% plot(fr, 20*log10(spectrs_Gaussian_noise))
+figure(5)
+plot(fr*1e-6, 20*log10(spectrs_Gaussian_noise))
 %==============================================%
 
 

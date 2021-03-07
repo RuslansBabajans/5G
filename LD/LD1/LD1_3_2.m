@@ -27,7 +27,8 @@ f1=170e6; % Carrier frequency 1
 f2=370e6; % Carrier frequency 2
 
 f_if=100e6; % Intemideate frequency
-f_LO=270e6; % f_LO_1 = f1 + f_i  and  f_LO_2 = f2 - f_if are the same. Mixing with f_LO will invert spectrum of f1
+f_LO=270e6; % f_LO_1 = f1 + f_i  and  f_LO_2 = f2 - f_if are the same.
+% Mixing with f_LO will invert spectrum of f1 (and f1 has asimetrical phase spectrum, because FM)
 
 % Modulation
 
@@ -44,10 +45,8 @@ sFM_RX=sFM*10^(dB_att/20); %  attenuated by 4 dB
 % Ceparate signals using filter after antenna. 170 MHz and 370 MHz are
 % image frequencies, and both will be shifted to 100 MHz intermediate frequency. 
 
-
 BP_1=fir1(50,[f1-40e6,f1+40e6]/(4e9/2),'bandpass'); % filter to separate 170 MHz carrier frequency 1
 sFM_RX_1=filter(BP_1,1,sFM_RX);
-
 
 BP_2=fir1(50,[f2-40e6,f2+40e6]/(4e9/2),'bandpass'); % filter to separate 370 MHz carrier frequency 2
 sFM_RX_2=filter(BP_2,1,sFM_RX);
@@ -109,7 +108,7 @@ sFM_2_at_IF=filter(IF_filter,1,sFM_2_at_IF);
 %==============================================%
 % Demodulation using diode
 
-fr_discr=fir1(50,(110e6)/(Fd/2), 'high');
+fr_discr=fir1(50,(f_if + 10e6)/(Fd/2), 'high');
 sFM_1_at_IF=filter(fr_discr,1,sFM_1_at_IF);
 sFM_2_at_IF=filter(fr_discr,1,sFM_2_at_IF);
 
@@ -121,7 +120,6 @@ LPF=fir1(50,f_if/(Fd)); % Filter after the diode
 sFMdem_1=filter(LPF,1,sFMdem_1);
 sFMdem_1=sFMdem_1-mean(sFMdem_1);
 sFMdem_1=sFMdem_1*sqrt(mean(usrDatRsm_1.^2)/mean(sFMdem_1.^2));
-
 
 sFMdem_2=filter(LPF,1,sFMdem_2);
 sFMdem_2=sFMdem_2-mean(sFMdem_2);
@@ -155,6 +153,11 @@ hold on
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_2))
 xlim([0, 200])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("s_{1}(t)","s_{2}(t)",'location','northeast')
+grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(2)
@@ -163,18 +166,38 @@ hold on
 plot(fr*1e-6,20*log10(spectr_sFM_1))
 plot(fr*1e-6,20*log10(spectr_sFM_2))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{1}(t)}","FM_{s_{2}(t)}",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,2)
 plot(fr*1e-6,20*log10(spectr_sFM),'color','#EDB120')
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{1}(t)}+FM_{s_{2}(t)}",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,3)
 plot(fr*1e-6,20*log10(spectr_sFM_RX_1))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{1}(t)}RX",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,4)
 plot(fr*1e-6,20*log10(spectr_sFM_RX_2),'color','#D95319')
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{2}(t)}RX",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(3)
@@ -183,12 +206,22 @@ hold on
 plot(fr*1e-6,20*log10(spectr_sFM_RX_1))
 plot(fr*1e-6,20*log10(spectr_sFM_1_at_IF)) % Note that the spectrum is flipped
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{1}(t)} RX","AM_{s_{1}(t)} I.F.",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(2,1,2)
 hold on
 plot(fr*1e-6,20*log10(spectr_sFM_RX_2))
 plot(fr*1e-6,20*log10(spectr_sFM_2_at_IF))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{2}(t)} RX","AM_{s_{2}(t)} I.F.",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(4)
@@ -198,6 +231,11 @@ plot(fr*1e-6,20*log10(spectr_sFM_1_at_IF))
 plot(fr*1e-6,20*log10(spectr_sFMdem_1))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{1}(t)} RX","FM_{s_{1}(t)} I.F.","s_{1}(t) Demodulated","s_{1}(t)",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 figure(5)
 hold on
@@ -206,105 +244,34 @@ plot(fr*1e-6,20*log10(spectr_sFM_2_at_IF))
 plot(fr*1e-6,20*log10(spectr_sFMdem_2))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_2))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s_{2}(t)} RX","FM_{s_{2}(t)} I.F.","s_{2}(t) Demodulated","s_{2}(t)",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 figure(10)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t*1e6,sFMdem_1)
+ylim([-2, 2])
+xlabel('t, ns')
+ylabel('s(t), V')
+legend("s_{1}(t)","s_{1}(t) Demodulated",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
 figure(11)
 hold on
 plot(t*1e6,usrDatRsm_2)
 plot(t*1e6,sFMdem_2)
-% 
-% figure(1)
-% hold on
-% plot(t*1e6,sAM_TX)
-% plot(t*1e6,sAM_RX)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("AM_{TX}","AM_{RX}")
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% %==============================================%
-% 
-% figure(2)
-% hold on
-% plot(t*1e6,sAM_RX_tuned)
-% plot(t*1e6,sAM_RX)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("AM_{RX} tuned","AM_{RX}")
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% %==============================================%
-% 
-% figure(3)
-% 
-% subplot(4,1,1)
-% plot(t,usrDatRsm)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("usrDat",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% 
-% subplot(4,1,2)
-% plot(t*1e6,sAMdem)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("AMdem",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% 
-% subplot(4,1,3)
-% plot(t*1e6,sAMdem_and_Gaussian_noise)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("AMdem+Gaussian noise",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% 
-% subplot(4,1,4)
-% plot(t*1e6,sAMflt)
-% 
-% xlabel('t, ns')
-% ylabel('s(t), V')
-% legend("AMflt",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% %==============================================%
+ylim([-2, 2])
+xlabel('t, ns')
+ylabel('s(t), V')
+legend("s_{2}(t)","s_{2}(t) Demodulated",'location','northeastOutside')
+grid on, grid minor
+set(gca,'fontsize',20)
 
-% figure(4)
-% plot(fr,20*log10(spectrAM_TX))
-% hold on
-% plot(fr,20*log10(spectrAM_RX)-4)
-
-% xlabel('f, Hz')
-% ylabel('s(f), dB')
-% legend("AM_{TX}","AM_{RX}",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% %==============================================%
-% 
-% figure(5)
-% plot(fr, 20*log10(spectr))
-% hold on
-% plot(fr,20*log10(spectrAMdem))
-% plot(fr,20*log10(spectrsAMdem_and_Gaussian_noise))
-% plot(fr,20*log10(spectrAMflt))
-% 
-% xlabel('f, Hz')
-% ylabel('s(f), dB')
-% legend("usrDat","AMdem","AMdem+Gaussian noise","AMflt",'location','northeast')
-% grid on, grid minor
-% set(gca,'fontsize',12)
-% %==============================================%
 
 
 
