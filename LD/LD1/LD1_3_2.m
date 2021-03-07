@@ -91,47 +91,44 @@ Level_difference_2=P_usrDatRsm_2*2-P_sFM_RX_tuned_2; % tuned AM_RX power compari
 
 tuned_receiver_gain_2=tuned_receiver_gain_2+0.00001; % increase gain of the radio frequency amplifier
 end
-
-
 %==============================================%
 % Mixing
 
-LO=1*cos(2*pi*f_LO*t);
+LO=cos(2*pi*f_LO*t);
 
 sFM_1_at_IF=sFM_RX_tuned_1.*LO;
 sFM_2_at_IF=sFM_RX_tuned_2.*LO;
 
 % Intermediate frequency filter
 
-IF_filter=fir1(50,f_LO/(4e9/2)); % If filter to remove the upconverted component
+IF_filter=fir1(50,f_if/(Fd/4)); % If filter to remove the upconverted component
 
 sFM_1_at_IF=filter(IF_filter,1,sFM_1_at_IF);
 sFM_2_at_IF=filter(IF_filter,1,sFM_2_at_IF);
 
 %==============================================%
 % Demodulation using diode
-fr_discr=fir1(36,110e6/2e9, 'high');
-sFMdem_1=filter(fr_discr,1,sFM_1_at_IF);
 
-sFMdem_1=abs(sFMdem_1);
+fr_discr=fir1(50,(110e6)/(Fd/2), 'high');
+sFM_1_at_IF=filter(fr_discr,1,sFM_1_at_IF);
+sFM_2_at_IF=filter(fr_discr,1,sFM_2_at_IF);
+
+sFMdem_1=abs(sFM_1_at_IF);
 sFMdem_2=abs(sFM_2_at_IF);
 
-LPF=fir1(50,f_if/(Fd));
+LPF=fir1(50,f_if/(Fd)); % Filter after the diode
 
 sFMdem_1=filter(LPF,1,sFMdem_1);
 sFMdem_1=sFMdem_1-mean(sFMdem_1);
 sFMdem_1=sFMdem_1*sqrt(mean(usrDatRsm_1.^2)/mean(sFMdem_1.^2));
 
-% sFMdem_2=filter(LPF,1,sFMdem_2);
-% sFMdem_2=sFMdem_2-mean(sFMdem_2);
-% sFMdem_2=sFMdem_2*sqrt(mean(usrDatRsm_2.^2)/mean(sFMdem_2.^2));
-%==============================================%
-% Filter  the signal
 
-% LPF=fir1(50,f0/(Fd/2));
-% sAMflt=filter(LPF,1,sAMdem_and_Gaussian_noise);
+sFMdem_2=filter(LPF,1,sFMdem_2);
+sFMdem_2=sFMdem_2-mean(sFMdem_2);
+sFMdem_2=sFMdem_2*sqrt(mean(usrDatRsm_2.^2)/mean(sFMdem_2.^2));
 %==============================================%
 % Spectra 
+
 [spectr_usrDatRsm_1, fr]=win_fft(usrDatRsm_1, 4e9,10^4,10^3);
 [spectr_usrDatRsm_2, fr]=win_fft(usrDatRsm_2, 4e9,10^4,10^3);
 
@@ -150,8 +147,6 @@ sFMdem_1=sFMdem_1*sqrt(mean(usrDatRsm_1.^2)/mean(sFMdem_1.^2));
 [spectr_sFMdem_1, fr]=win_fft(sFMdem_1, 4e9,10^4,10^3);
 [spectr_sFMdem_2, fr]=win_fft(sFMdem_2, 4e9,10^4,10^3);
 
-% [spectrsAMdem_and_Gaussian_noise, fr]=win_fft(sAMdem_and_Gaussian_noise, 4e9,10^4,10^3);
-% [spectrAMflt, fr]=win_fft(sAMflt, 4e9,10^4,10^3);
 %==============================================%
 %% Plots
 
@@ -204,11 +199,23 @@ plot(fr*1e-6,20*log10(spectr_sFMdem_1))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
 xlim([0, 500])
 
+figure(5)
+hold on
+plot(fr*1e-6,20*log10(spectr_sFM_RX_2))
+plot(fr*1e-6,20*log10(spectr_sFM_2_at_IF))
+plot(fr*1e-6,20*log10(spectr_sFMdem_2))
+plot(fr*1e-6,20*log10(spectr_usrDatRsm_2))
+xlim([0, 500])
 
 figure(10)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t*1e6,sFMdem_1)
+
+figure(11)
+hold on
+plot(t*1e6,usrDatRsm_2)
+plot(t*1e6,sFMdem_2)
 % 
 % figure(1)
 % hold on
