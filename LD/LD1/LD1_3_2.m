@@ -208,7 +208,7 @@ plot(fr*1e-6,20*log10(spectr_sFM_1_at_IF)) % Note that the spectrum is flipped
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("FM_{s_{1}(t)} RX","AM_{s_{1}(t)} I.F.",'location','northeastOutside')
+legend("FM_{s_{1}(t)} RX","FM_{s_{1}(t)} I.F.",'location','northeastOutside')
 grid on, grid minor
 set(gca,'fontsize',20)
 
@@ -219,7 +219,7 @@ plot(fr*1e-6,20*log10(spectr_sFM_2_at_IF))
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("FM_{s_{2}(t)} RX","AM_{s_{2}(t)} I.F.",'location','northeastOutside')
+legend("FM_{s_{2}(t)} RX","FM_{s_{2}(t)} I.F.",'location','northeastOutside')
 grid on, grid minor
 set(gca,'fontsize',20)
 %==============================================%

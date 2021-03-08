@@ -92,7 +92,7 @@ end
 % Mixing
 
 LO_1=cos(2*pi*f_LO_1*t);
-LO_2=sin(2*pi*f_LO_2*t); % why ?
+LO_2=cos(2*pi*f_LO_2*t-(114*pi/180)); % Addresss the phase shift after filter
 
 sAM_1_directly_converted=sAM_RX_tuned_1.*LO_1;
 sAM_2_directly_converted=sAM_RX_tuned_2.*LO_2;
@@ -128,6 +128,24 @@ sAM_2_directly_converted=sAM_2_directly_converted*sqrt(mean(usrDatRsm_2.^2)/mean
 %==============================================%
 %% Plots
 
+figure(32)
+hold on
+plot(t*1e6,sAM_1,'Linewidth',2)
+plot(t*1e6,sAM_RX_tuned_1,'Linewidth',2)
+plot(t*1e6,LO_1,'Linewidth',2)
+% plot(t*1e6,sAM_1_directly_converted,'Linewidth',2)
+xlim([0, 0.1])
+set(gca,'fontsize',20)
+
+figure(33)
+hold on
+plot(t*1e6,sAM_2,'Linewidth',2)
+plot(t*1e6,sAM_RX_tuned_2,'Linewidth',2)
+plot(t*1e6,LO_2,'Linewidth',2)
+% plot(t*1e6,sAM_2_directly_converted,'Linewidth',2)
+xlim([0, 0.1])
+set(gca,'fontsize',20)
+
 figure(1)
 hold on
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
@@ -137,6 +155,7 @@ xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("s(t)_1","s(t)_2",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(2)
@@ -147,32 +166,36 @@ plot(fr*1e-6,20*log10(spectr_sAM_2))
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("AM_{s(t)_1}","AM_{s(t)_2}",'location','northeast')
+legend("AM_{s(t)_1}","AM_{s(t)_2}",'location','northeastOutside')
 grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,2)
 plot(fr*1e-6,20*log10(spectr_sAM),'color','#EDB120')
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("AM_{s(t)_1}+AM_{s(t)_2}",'location','northeast')
+legend("AM_{s(t)_1}+AM_{s(t)_2}",'location','northeastOutside')
 grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,3)
 plot(fr*1e-6,20*log10(spectr_sAM_RX_1))
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("AM_{s(t)_1}RX",'location','northeast')
+legend("AM_{s(t)_1}RX",'location','northeastOutside')
 grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(4,1,4)
 plot(fr*1e-6,20*log10(spectr_sAM_RX_2),'color','#D95319')
 xlim([0, 500])
 xlabel('f, MHz')
 ylabel('s(f), dB')
-legend("AM_{s(t)_2}RX",'location','northeast')
+legend("AM_{s(t)_2}RX",'location','northeastOutside')
 grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(3)
@@ -185,6 +208,7 @@ xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{s(t)_1} RX","AM_{s(t)_1} B.B.",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 
 subplot(2,1,2)
 hold on
@@ -195,6 +219,7 @@ xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{s(t)_2} RX","AM_{s(t)_2} B.B.",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 %==============================================%
 
 figure(4)
@@ -207,6 +232,7 @@ xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{s(t)_1} RX","AM_{s(t)_1} B.B.","s(t)_1",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 
 figure(5)
 hold on
@@ -218,8 +244,9 @@ xlabel('f, MHz')
 ylabel('s(f), dB')
 legend("AM_{s(t)_2} RX","AM_{s(t)_2} B.B.","s(t)_2",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 
-figure(10)
+figure(6)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t*1e6,sAM_1_directly_converted)
@@ -228,8 +255,9 @@ xlabel('t, ns')
 ylabel('s(t), V')
 legend("s(t)_1","s(t)_1 Demodulated",'location','northeast')
 grid on, grid minor
+set(gca,'fontsize',20)
 
-figure(11)
+figure(7)
 hold on
 plot(t*1e6,usrDatRsm_2)
 plot(t*1e6,sAM_2_directly_converted)
@@ -238,7 +266,7 @@ xlabel('t, ns')
 ylabel('s(t), V')
 legend("s(t)_2","s(t)_2 Demodulated",'location','northeast')
 grid on, grid minor
-
+set(gca,'fontsize',20)
 
 
 
