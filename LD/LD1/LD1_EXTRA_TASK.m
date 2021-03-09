@@ -38,7 +38,9 @@ sFM_1_i=filter(LPF,1,sFM_1_i);
 sFM_1_q=filter(LPF,1,sFM_1_q);
 
 sFM_1_dem=atan2d(sFM_1_i,sFM_1_q);
+% sFM_1_dem=unwrap(sFM_1_dem);
 sFM_1_dem_diff=diff(sFM_1_dem);
+
 %==============================================%
 % Spectra 
 
@@ -55,6 +57,7 @@ figure(1)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t(1:end-1)*1e6,sFM_1_dem_diff)
+plot(t*1e6,sFM_1_dem)
 ylim([-2, 2])
 xlabel('t, ns')
 ylabel('s(t), V')
