@@ -66,9 +66,6 @@ tuned_receiver_gain_2=1; % tunable gain of the radio frequency amplifier
 sAM_RX_tuned_2=sAM_RX_2; % Placeholder
 Level_difference_2=10; % Placeholder
 
-% Received signal amplification to adjust the power level of AM_RX to twice
-% the powe level of
-
 while Level_difference_1 > 0
     sAM_RX_tuned_1=sAM_RX_tuned_1*tuned_receiver_gain_1; % Amplify received signal
     

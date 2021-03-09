@@ -57,7 +57,7 @@ figure(1)
 hold on
 plot(t*1e6,usrDatRsm_1)
 plot(t(1:end-1)*1e6,sFM_1_dem_diff)
-plot(t*1e6,sFM_1_dem)
+% plot(t*1e6,sFM_1_dem)
 ylim([-2, 2])
 xlabel('t, ns')
 ylabel('s(t), V')
@@ -72,4 +72,9 @@ plot(fr*1e-6,20*log10(spectr_sFM_1_q))
 plot(fr*1e-6,20*log10(spectr_usrDatRsm_1))
 plot(fr*1e-6,20*log10(spectr_sFM_1_dem))
 xlim([0, 500])
+xlabel('f, MHz')
+ylabel('s(f), dB')
+legend("FM_{s(t)} I","FM_{s(t)} Q","s(t)","s(t) Demodulated",'location','northeast')
+grid on, grid minor
+set(gca,'fontsize',20)
 
