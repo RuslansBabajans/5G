@@ -22,10 +22,10 @@ firTx=firrcos(46,0.25,0.25,2,'rolloff', 'sqrt');
 usrDatFltI=filter(firTx, 1, usrDatI); usrDatFltI=usrDatFltI(46:end);
 usrDatFltQ=filter(firTx, 1, usrDatQ); usrDatFltQ=usrDatFltQ(46:end);
 
-% figure(1); hold on
-% plot(usrDatI(1:100), 'b.-')
-% plot(usrDatFltI(1:100), 'r.-')
-% return
+figure(1); hold on
+plot(usrDatI(1:100), 'b.-')
+plot(usrDatFltI(1:100), 'r.-')
+
 
 
 % Resampling
@@ -51,9 +51,9 @@ sAMfltQ=2*filter(LPF,1,sQAMdemQ); sAMfltQ=sAMfltQ(161:end);
 usrDatRsm2I=resample(sAMfltI(11:end),1,40);
 usrDatRsm2Q=resample(sAMfltQ(11:end),1,40);
 
-% figure(1); hold on
-% plot(usrDatFltQ,'b.-')
-% plot(usrDatRsm2Q,'r.-')
+figure(2); hold on
+plot(usrDatFltQ,'b.-')
+plot(usrDatRsm2Q,'r.-')
 
 usrDatRsm2I=filter(firTx, 1, usrDatRsm2I); usrDatRsm2I=usrDatRsm2I(60:end);
 usrDatRsm2Q=filter(firTx, 1, usrDatRsm2Q); usrDatRsm2Q=usrDatRsm2Q(60:end);
@@ -63,8 +63,8 @@ usrDatRsm2Q=filter(firTx, 1, usrDatRsm2Q); usrDatRsm2Q=usrDatRsm2Q(60:end);
 % return
 
 
-plot(usrDatRsm2I(4:4:end),usrDatRsm2Q(4:4:end),'b.')
-return
+% plot(usrDatRsm2I(4:4:end),usrDatRsm2Q(4:4:end),'b.')
+% return
 
 % Calculate AM spectra
 [spectr, fr]=win_fft(usrDatRsmI, 4e9,10^4,10^3);
@@ -73,16 +73,16 @@ return
 [spectrQAMflt, fr]=win_fft(sAMfltQ, 4e9,10^4,10^3);
 
 
-figure(1); hold on; grid on
+figure(3); hold on; grid on
 plot(fr, 20*log10(spectr),'b.-')
 plot(fr, 20*log10(spectrAM),'r.-')
 plot(fr, 20*log10(spectrQAMdem),'g.-')
 plot(fr, 20*log10(spectrQAMflt),'m.-')
-return
 
-figure(1); hold on
-plot(usrDatRsm,'b.-')
-plot(sAM,'r.-')
-plot(sAMdem,'g.-')
-plot(sAMflt,'m.-')
+
+% figure(4); hold on
+% plot(usrDatRsm,'b.-')
+% plot(sAM,'r.-')
+% plot(sAMdem,'g.-')
+% plot(sAMflt,'m.-')
 
