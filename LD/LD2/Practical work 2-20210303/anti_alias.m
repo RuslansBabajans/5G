@@ -7,7 +7,7 @@ ALPH=-3:2:3;
 N=1000;
 
 fir=firrcos(66,0.125,0.25,2,'rolloff');
-%fvtool(fir)
+% fvtool(fir)
 
 fir_sm=fir1(50,0.25);
 

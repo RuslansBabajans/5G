@@ -1,5 +1,5 @@
 % Practical work 2
-clear all; clc; close all
+clear variables; clc; close all
 
 Fs=100e6; % baseband clock
 Fd=4000e6; % analog sampling freq
@@ -58,10 +58,8 @@ plot(usrDatRsm2Q,'r.-')
 usrDatRsm2I=filter(firTx, 1, usrDatRsm2I); usrDatRsm2I=usrDatRsm2I(60:end);
 usrDatRsm2Q=filter(firTx, 1, usrDatRsm2Q); usrDatRsm2Q=usrDatRsm2Q(60:end);
 
-
 % eyediagram(usrDatRsm2Q(4:end),16)
 % return
-
 
 % plot(usrDatRsm2I(4:4:end),usrDatRsm2Q(4:4:end),'b.')
 % return
