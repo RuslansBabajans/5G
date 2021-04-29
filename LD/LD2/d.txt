@@ -1,0 +1,25 @@
+close all, format compact, format long, clc
+
+Beta=0.6;   %rolloff factor
+Ts=1e-5;    %simbola laiks
+f=0:1e3:1e5;
+
+f1=f(f<(1-Beta)/(2*Ts)); %pirmais frekvencu apgabals
+f2=f((f>=(1-Beta)/(2*Ts))&(f<(1+Beta)/(2*Ts))); %otrais frekvencu apgabals
+f3=f(f>=(1+Beta)/(2*Ts)); %trešais frekvencu apgabals
+ 
+Hrc1=ones(size(f1));
+Hrc2=1/2*(1+cos((pi*Ts/Beta).*(abs(f2)-((1-Beta)/(2*Ts)))));
+Hrc3=zeros(size(f3));
+
+Hrc=[Hrc1,Hrc2,Hrc3];
+figure()
+plot(f*1e-3,Hrc,'b.-');
+grid on
+title('Raised cosine filter');
+xlabel('f, Hz');
+ylabel('U, V');
+
+
+firTx=firrcos(96,0.25,Beta,2,'rolloff', 'normal');
+fvtool(firTx,1)
