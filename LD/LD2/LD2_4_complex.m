@@ -52,7 +52,7 @@ usrChan=usrChan+randn(size(usrChan))*sqrt(mean(abs(usrChan).^2)/2)*10^(-SNR/20);
 %==============================================%
 %% QAM demodulator
 phi_0=0; % pi/3
-delta_f=100e3; % 100e3
+delta_f=0; % 100e3
 f1=f0+delta_f;
 LO=exp(-j*(2*pi*f1*t+phi_0));
 

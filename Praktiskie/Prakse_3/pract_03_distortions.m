@@ -15,7 +15,7 @@ firTx=firrcos(64,0.25,0.25,2,'rolloff','normal'); firTx=firTx/max(firTx); firRx=
 
 SNR=80; % AWGN signal-to-noise ratio in dB
 
-fc=10e3; % carrier offset in Hz
+fc=0e3; % carrier offset in Hz
 phc=0*pi/180; % carrier phase shift in radians
 phNs=0*pi/180; % phase noise standard deviation in radians (not standard dBc — just for visualization) 
 
