@@ -17,10 +17,10 @@ r=sqrt(x.^2+y.^2);
 % phi=atan(y./x);
 
 ampDens_1=abs(realGaus+j*imagGaus);
-phsDens_1=atan(imagGaus./realGaus);
+phsDens_1=angle(realGaus+j*imagGaus);
 
 ampDens_2=(r./((stan_div)^2)).*exp(-(r.^2)/(2*stan_div^2));
-phsDens_2=1/(2*pi)*ones(1,length(r));
+phsDens_2=rand(N,1)*2*pi-pi;  %1/(2*pi)*ones(1,length(r));
 
 figure(1)
 histogram(realGaus)

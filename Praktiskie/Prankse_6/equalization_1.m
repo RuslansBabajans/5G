@@ -25,7 +25,7 @@ usrDatFlt=filter(firTx, 1, usrDat); usrDatFlt=usrDatFlt(65:end);
 %% Two-ray propagation channel model
 % tau=5ns;
 
-DP=10^(-8/20);
+DP=10^(-3/20);
 
 % h=1*[zeros(1,8) 1 zeros(1,9)]+(1-DP)*lpntrp(17,0.5)*exp(-j*2*pi*f0*5.5e-9);
 h=1/sqrt(1+(1-DP)^2)*[zeros(1,8) 1 zeros(1,9)]+(1-DP)/sqrt(1+(1-DP)^2)*lpntrp(17,0.5)*exp(-j*2*pi*f0*5.5e-9);
@@ -52,7 +52,7 @@ plot(usrChan(1:4:end),'b.')
 R=mean(abs(ALPH).^4)/mean(abs(ALPH).^2); 
 
 cntMain=0;
-eqCoef=zeros(1,15); eqCoef(9)=1;
+% eqCoef=zeros(1,15); eqCoef(9)=1;
 eqCoef=zeros(1,33); eqCoef(17)=1;
 eqFltr=zeros(size(eqCoef));
 yOut=0;

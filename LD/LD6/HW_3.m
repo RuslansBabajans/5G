@@ -17,9 +17,10 @@ imagGaus=stan_div*randn(N,1)+mean_val_2;
 r=sqrt(x.^2+y.^2);
 
 ampDens_1=abs(realGaus+j*imagGaus);
-phsDens_1=atan(imagGaus./realGaus);
 
-% ampDens_2=;
+
+% z=((mean_val_1*mean_val_2)/(2*stan_div^2)).*r;
+% ampDens_2=(r./(stan_div^2)).*exp(-1.*(r.^2+mean_val_1^2+mean_val_2^2)./(2*stan_div^2)).*besselj(0,z);
 
 
 figure(1)
@@ -30,7 +31,7 @@ histogram(imagGaus)
 figure(2)
 histogram(ampDens_1)
 % hold on
-% plot(r,ampDens_2)
+% plot(r,ampDens_2*1e5)
 
 
 

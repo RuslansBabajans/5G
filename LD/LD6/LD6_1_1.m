@@ -8,7 +8,7 @@ close all
 Fs=100e6; % baseband clock
 Fd=4000e6; % analog sampling freq
 f0=1e9; % carrier frequency
-N=1000; % number of symbols to transmit
+N=100000; % number of symbols to transmit
 
 ALPH=-3:2:3;
 ALPH=repmat(-3:2:3,4,1)+1j*repmat(ALPH.',1,4);
@@ -17,7 +17,6 @@ ALPH=repmat(-3:2:3,4,1)+1j*repmat(ALPH.',1,4);
     %% Generate user data
     % 4 samples per symbol, Fs/4= 25 Mbaud
     usrDat=kron(ALPH(randi(numel(ALPH),1,N)),[1 0 0 0]);  
-%     usrDatQ=kron(ALPH(randi(4,1,N)),[1 0 0 0]);
     %=====================================================================%
     %% Raised-cosine filters 
     firTx=firrcos(64,0.25,0.25,2,'rolloff','normal');
@@ -26,31 +25,17 @@ ALPH=repmat(-3:2:3,4,1)+1j*repmat(ALPH.',1,4);
     %=====================================================================%
     %% Signal forming using a single raised-cosine filter
     usrDatFlt=filter(firTx, 1, usrDat);
-%     usrDatFltQ=filter(firTx, 1, usrDatQ);
-
     usrDatFlt=usrDatFlt(65:end); % Skip filter transition time
-%     usrDatFltQ=usrDatFltQ(66:end);
-    %=====================================================================%
-    %% Upsampling block
-%     usrDatRsmI=resample(usrDatFltI,40,1); % Resample to 4 Ghz sample rate
-%     usrDatRsmQ=resample(usrDatFltQ,40,1);
-%     t=(1:length(usrDatRsmI))/Fd; % time vector
-%     I_t=usrDatRsmI;
-%     Q_t=usrDatRsmQ;
-    %=====================================================================%
-    %% Quadrature modulation
-    % QAM is selected as s_mod(t)=I*cos-Q*sin
-%     sAM=I_t.*cos(2*pi*f0*t)-Q_t.*sin(2*pi*f0*t); % QAM signal
 %=========================================================================%
 %% Channel models
     %% Direct AWGN channel with no time delay
 %     SNR=120; % Signal-to-noise ratio in dB
-%     usrChan=sAM;
+%     usrChan=usrDatFlt;
 %     usrChan=usrChan+randn(size(usrChan))*sqrt(mean(abs(usrChan).^2)/2)...
 %             *10^(-SNR/20);
     %=====================================================================%
     %% Two-ray propagation channel model
-    DP=10^(-3/20);
+    DP=10^(-5/20);
     
 %     h=1*[zeros(1,8) 1 zeros(1,9)]+(1-DP)*lpntrp(17,0.5)...
 %       *exp(-j*2*pi*f0*5.5e-9);
@@ -61,9 +46,12 @@ ALPH=repmat(-3:2:3,4,1)+1j*repmat(ALPH.',1,4);
     
     usrChan=filter(h,1,usrDatFlt);
     usrChan=usrChan(9:end);
+    usrChan=usrChan/sqrt(mean(abs(usrChan).^2))*sqrt(mean(abs(usrDatFlt).^2));
     
     figure(2)
     plot(usrChan(1:4:end),'b.')
+    
+    fvtool(usrChan,1,h,1)
     %=====================================================================%
     
     
