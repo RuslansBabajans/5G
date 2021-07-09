@@ -20,7 +20,9 @@ ampDens_1=abs(realGaus+j*imagGaus);
 phsDens_1=angle(realGaus+j*imagGaus);
 
 ampDens_2=(r./((stan_div)^2)).*exp(-(r.^2)/(2*stan_div^2));
-phsDens_2=rand(N,1)*2*pi-pi;  %1/(2*pi)*ones(1,length(r));
+phsDens_2=1600*1/(2*pi)*ones(1,100); %rand(N,1)*2*pi-pi;
+
+phi=linspace(-pi,pi,100);
 
 figure(1)
 histogram(realGaus)
@@ -28,15 +30,14 @@ hold on
 histogram(imagGaus)
 
 figure(2)
-histogram(ampDens_1)
+[d]=histogram(ampDens_1,100)
 hold on
 plot(r,ampDens_2*5e3,'LineWidth',2)
 
 figure(3)
 histogram(phsDens_1)
 hold on
-histogram(phsDens_2)
-
+plot(phi,phsDens_2)
 
 
 

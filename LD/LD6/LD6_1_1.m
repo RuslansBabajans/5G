@@ -28,12 +28,6 @@ ALPH=repmat(-3:2:3,4,1)+1j*repmat(ALPH.',1,4);
     usrDatFlt=usrDatFlt(65:end); % Skip filter transition time
 %=========================================================================%
 %% Channel models
-    %% Direct AWGN channel with no time delay
-%     SNR=120; % Signal-to-noise ratio in dB
-%     usrChan=usrDatFlt;
-%     usrChan=usrChan+randn(size(usrChan))*sqrt(mean(abs(usrChan).^2)/2)...
-%             *10^(-SNR/20);
-    %=====================================================================%
     %% Two-ray propagation channel model
     DP=10^(-5/20);
     
