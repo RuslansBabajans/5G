@@ -31,7 +31,8 @@ DP=10^(-3/20);
 h=1/sqrt(1+(1-DP)^2)*[zeros(1,8) 1 zeros(1,9)]+(1-DP)/sqrt(1+(1-DP)^2)*lpntrp(17,0.5)*exp(-j*2*pi*f0*5.5e-9);
 %fvtool(h)
 
-usrChan=filter(h,1,usrDatFlt); usrChan=usrChan(9:end);
+usrChan=filter(h,1,usrDatFlt);
+usrChan=usrChan(9:end);
 usrChan=usrChan/sqrt(mean(abs(usrChan).^2))*sqrt(mean(abs(usrDatFlt).^2));
 
 figure(1); hold on
